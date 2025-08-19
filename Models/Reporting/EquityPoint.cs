@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BlueChips.Models.Reporting
 {
-    class EquityPoint
-    {
+    public class EquityPoint {
+        public DateTimeOffset Ts { get; set; }
+        public decimal Equity { get; set; }
     }
 }

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BlueChips.Models.Trading
 {
-    class PortfolioSnapshot
-    {
+    public class PortfolioSnapshot {
+        public DateTimeOffset Ts { get; set; }
+        public decimal Equity { get; set; }
+        public decimal Cash { get; set; }
+        public decimal UnrealizedPnl { get; set; }
+        public decimal RealizedPnl { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using BlueChips.Services.Upbit;
 using BlueChips.Services.Trading;
 using BlueChips.Services.Reporting;
 using BlueChips.Services.AutoTrade;
+using BlueChips.Services.Configuration;
 
 // ViewModels
 using BlueChips.ViewModels;
@@ -20,26 +21,37 @@ namespace BlueChips {
     public partial class App : Application {
         public static IServiceProvider Services { get; private set; } = default!;
 
-        public App() { }
+        public App() {
+            //InitializeComponent();
+            Console.WriteLine("[App] Allocated in Memory");
+        }
 
         protected override void OnStartup(StartupEventArgs e) {
+            // 전역 예외 훅
+            this.DispatcherUnhandledException += (s, ex) => MessageBox.Show(ex.Exception.ToString(), "DispatcherUnhandledException");
+            AppDomain.CurrentDomain.UnhandledException += (s, ex) => MessageBox.Show(ex.ExceptionObject.ToString()!, "UnhandledException");
+            TaskScheduler.UnobservedTaskException += (s, ex) => MessageBox.Show(ex.Exception.ToString(), "UnobservedTaskException");
+
+            Console.WriteLine("[App] OnStartup: begin");
             base.OnStartup(e);
 
             var sc = new ServiceCollection();
+            Console.WriteLine("[App] ConfigureServices");
             ConfigureServices(sc);
+
+            Console.WriteLine("[App] BuildServiceProvider");
             Services = sc.BuildServiceProvider();
 
-            // 1) DB 초기화 (파일 생성, PRAGMA, schema_v1.sql, migrations 적용)
-            var dbInit = Services.GetRequiredService<DatabaseInitializer>();
-            dbInit.Initialize(); // 비동기 구현이라면 InitializeAsync().GetAwaiter().GetResult();
+            Console.WriteLine("[App] DB Initialize");
+            Services.GetRequiredService<DatabaseInitializer>().Initialize();
 
-            // 2) 메인 윈도우 표시
-            var main = new MainWindow
-            {
-                DataContext = Services.GetRequiredService<MainViewModel>()
-            };
+            Console.WriteLine("[App] Resolve MainViewModel & show MainWindow");
+            var main = new MainWindow { DataContext = Services.GetRequiredService<MainViewModel>() };
             main.Show();
+
+            Console.WriteLine("[App] OnStartup: done");
         }
+
 
         private static void ConfigureServices(IServiceCollection services) {
             // === 인프라/공통 ===
@@ -65,9 +77,9 @@ namespace BlueChips {
             services.AddSingleton<IPriceFeed, PriceFeed>(); // 주기 폴링 및 최신 시세 캐시
 
             // === Trading (저장소/엔진/포트폴리오) ===
-            services.AddSingleton<ITradeRepository, SQLiteTradeRepository>(); // 실사용
+            //services.AddSingleton<ITradeRepository, SQLiteTradeRepository>(); // 실사용
             // 개발 모드에서 InMemory로 바꾸려면 위 줄을 주석처리하고 아래 줄을 활성화
-            // services.AddSingleton<ITradeRepository, InMemoryTradeRepository>();
+             services.AddSingleton<ITradeRepository, InMemoryTradeRepository>();
 
             services.AddSingleton<IFeePolicy, FixedRateFeePolicy>();
             services.AddSingleton<ISlippageModel, NoSlippageModel>();

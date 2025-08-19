@@ -1,4 +1,5 @@
-﻿using BlueChips.Models.Upbit;
+﻿using BlueChips.Models.Trading;
+using BlueChips.Models.Upbit;
 using System;
 using System.Collections.Generic;
 using System.Linq;

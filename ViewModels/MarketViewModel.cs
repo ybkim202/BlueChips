@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlueChips.ViewModels
 {
-    public partial class MarketViewModel : ViewModelBase {}
+    public partial class MarketViewModel : ViewModelBase {
         /** Constructor **/
         public MarketViewModel() {
             Console.WriteLine("[MarketViewModel] initialized.");

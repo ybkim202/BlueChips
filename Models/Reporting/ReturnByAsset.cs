@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace BlueChips.Models.Reporting
 {
-    class ReturnByAsset
-    {
+    public class ReturnByAsset {
+        public string Asset { get; set; } = "";
+        public decimal ReturnPct { get; set; }     // 0.1234 == +12.34%
+        public decimal Pnl { get; set; }
     }
 }
