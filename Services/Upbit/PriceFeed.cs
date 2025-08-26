@@ -24,18 +24,28 @@ namespace BlueChips.Services.Upbit
         public event Action<string, TradeTick>? TradeTicked;
 
         public PriceFeed(IUpbitRestService rest, Services.SettingsProvider settings) {
+            Console.WriteLine("[PriceFeed] Constructor called.");
             _rest = rest;
             _settings = settings;
+
+            _ = StartAsync();  // 자동 시작
         }
 
+        /* StartAsync: 
+         * [1] Get PollingRateInterval(MicroSec)
+         * [2] Get Market Data
+         * [3] Get Ticker Data */
         public Task StartAsync(CancellationToken ct = default) {
+            Console.WriteLine("[PriceFeed] StartAsync called.");
             if (_runner != null) return Task.CompletedTask;
             _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             _runner = Task.Run(async () =>
             {
                 var pollMs = _settings.Get().Feed?.PollIntervalMs ?? 1000;
                 var markets = await _rest.GetMarketsAsync(false, _cts.Token);
-                var top = markets.Select(m => m.Symbol).Take(20).ToArray(); // MVP: 상위 20개만
+                var top = markets.Select(m => m.Symbol).Take(20).ToArray();     // MVP: 상위 20개만
+
+                Console.WriteLine($"[PriceFeed] Started. Poll every {pollMs}ms for {top.Length} markets.");
 
                 while (!_cts.IsCancellationRequested) {
                     try {

@@ -50,6 +50,8 @@ namespace BlueChips {
             main.Show();
 
             Console.WriteLine("[App] OnStartup: done");
+
+            var pf = Services.GetRequiredService<PriceFeed>(); // 싱글톤 생성 및 시작
         }
 
 
@@ -58,6 +60,7 @@ namespace BlueChips {
             services.AddSingleton<SettingsProvider>();   // Config/AppSettings.json 로딩
             services.AddSingleton<TimeProvider>();       // UTC 시간 소스
             services.AddSingleton<DatabaseInitializer>(); // DB 파일/스키마 초기화
+            services.AddSingleton<PriceFeed>();          // Upbit 시세 폴링 및 캐시
 
             // === UI 인프라 ===
             services.AddSingleton<INavigationService, NavigationService>();

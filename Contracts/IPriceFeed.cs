@@ -12,7 +12,6 @@ namespace BlueChips.Contracts
         /** Methods **/
         Task StartAsync(CancellationToken ct = default);
         Task StopAsync();
-
         decimal? GetLastPrice(string market);
         Orderbook? GetOrderbookSnapshot(string market);
         IReadOnlyList<TradeTick> GetRecentTrades(string market, int take = 50);
